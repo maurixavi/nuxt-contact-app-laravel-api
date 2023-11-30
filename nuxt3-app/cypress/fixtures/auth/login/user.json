@@ -1,0 +1,10 @@
+{
+    "success":true,
+    "data": {
+        "user": {
+            "uuid": "0687eda1-2ad9-49d2-9b1f-8b83f45256e9",
+            "email": "user@user.com",
+            "name": "User"
+        }
+    }
+}
