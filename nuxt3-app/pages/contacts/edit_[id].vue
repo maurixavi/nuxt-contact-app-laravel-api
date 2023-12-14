@@ -37,7 +37,6 @@
             Save
           </Button>
         </div>
-        <!--<SelectField label="Options" :options="options" />-->
       </form>
     </div>
   </PageWrapper>
@@ -55,19 +54,6 @@ useHead(() => ({
     class: 'test',
   },
 }))
-/*
-const contact = {
-  name: '',
-  title: '',
-  profilePicture: '',
-  address: '',
-  phone: '',
-  email: '',
-}*/
-
-/*const onSubmit = async () => {
-  // Lógica para manejar el envío del formulario y guardar el contacto
-}*/
 </script>
 
 <script>

@@ -76,8 +76,10 @@
 </template>
 
 <script setup>
+import { useContactsStore } from '@/stores/contacts'
 import PageWrapper from '@/components/layout/wrappers/PageWrapper'
 import Button from '@/components/common/buttons/Button'
+import axios from 'axios'
 
 useHead({
   title: 'My App | Contacts',
@@ -86,48 +88,23 @@ useHead({
     class: 'test',
   },
 })
-</script>
 
-<script>
-import axios from 'axios'
-export default {
-  name: 'Contact',
-  data() {
-    return {
-      contacts: [],
-    }
-  },
-  computed: {
-    sortedContacts() {
-      return this.contacts.slice().sort((a, b) => {
-        const nameA = a.name.toUpperCase()
-        const nameB = b.name.toUpperCase()
-        return nameA.localeCompare(nameB)
-      })
-    },
-  },
-  mounted() {
-    //this.getStudents()
-    // Configurar el interceptor para agregar automáticamente el token a las solicitudes
-    const authToken = localStorage.getItem('authToken')
+const contactsStore = useContactsStore()
+const authToken = localStorage.getItem('authToken')
 
-    if (authToken) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`
-    }
-
-    this.getStudents()
-  },
-  methods: {
-    getStudents() {
-      //alert('hola')
-      axios
-        .get(`http://localhost:8000/api/contacts`, this.contact)
-        .then((res) => {
-          console.log(res.data.contacts)
-          //alert(res.data)
-          this.contacts = res.data.contacts
-        })
-    },
-  },
+if (authToken) {
+  axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`
 }
+
+const sortedContacts = computed(() => {
+  return contactsStore.contacts.slice().sort((a, b) => {
+    const nameA = a.name.toUpperCase()
+    const nameB = b.name.toUpperCase()
+    return nameA.localeCompare(nameB)
+  })
+})
+
+onMounted(() => {
+  contactsStore.loadContacts()
+})
 </script>

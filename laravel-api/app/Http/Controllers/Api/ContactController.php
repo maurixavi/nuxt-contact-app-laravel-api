@@ -57,7 +57,7 @@ class ContactController extends Controller
                 'address' => $request->address,
                 'phone' => $request->phone,
                 'email' => $request->email,
-                'user_id' => $userId, // Agrega el user_id
+                'user_id' => $userId, 
             ]);
 
             if ($contact) {
@@ -76,29 +76,11 @@ class ContactController extends Controller
 
     }
 
-    /*public function show($id)
-    {
-        $contact = Contact::find($id);
-        if ($contact) {
-
-            return response()->json([
-                'status' => 200,
-                'contact' => $contact
-            ], 200);
-        } else {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Contact Not Found!'
-            ],404);
-        }
-    }*/
     public function show($id)
     {
-        // Obtén el ID del usuario autenticado
         $userId = auth()->id();
         \Log::info('User ID: ' . $userId);
 
-        // Busca el contacto por ID y user_id
         $contact = Contact::where('id', $id)
                         ->where('user_id', $userId)
                         ->first();
