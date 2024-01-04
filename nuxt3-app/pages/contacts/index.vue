@@ -5,6 +5,7 @@
 
       <div class="relative mb-6 ml-2 mr-2">
         <input
+          v-model="searchQuery"
           type="text"
           placeholder="Search contact..."
           class="w-full border border-gray-100 rounded px-4 py-2 pr-10 focus:outline-none text-gray-400"
@@ -32,7 +33,7 @@
         <table class="w-full">
           <tbody>
             <tr
-              v-for="(contact, index) in sortedContacts"
+              v-for="(contact, index) in filteredContacts"
               :key="index"
               class="even:bg-gray-50 odd:bg-white"
             >
@@ -96,11 +97,35 @@ if (authToken) {
   axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`
 }
 
+const searchQuery = ref('')
+
 const sortedContacts = computed(() => {
   return contactsStore.contacts.slice().sort((a, b) => {
     const nameA = a.name.toUpperCase()
     const nameB = b.name.toUpperCase()
     return nameA.localeCompare(nameB)
+  })
+})
+
+/*const filteredContacts = computed(() => {
+  const query = searchQuery.value.toLowerCase()
+  return sortedContacts.value.filter((contact) => {
+    return contact.name.toLowerCase().startsWith(query)
+  })
+})*/
+
+const filteredContacts = computed(() => {
+  const query = searchQuery.value.toLowerCase()
+  const queryWords = query.split(' ').filter(Boolean) // Dividir la consulta en palabras y eliminar cadenas vacías
+
+  return sortedContacts.value.filter((contact) => {
+    return queryWords.every((word) => {
+      // Verificar si cada palabra de la consulta coincide con alguna palabra en el nombre o título
+      return contact.name
+        .toLowerCase()
+        .split(' ')
+        .some((nameWord) => nameWord.startsWith(word))
+    })
   })
 })
 

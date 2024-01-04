@@ -21,12 +21,41 @@
             </p>
           </div>
         </div>
-        <InputField v-model="contact.name" label="Name" />
-        <InputField v-model="contact.title" label="Title" />
+        <InputField v-model="contact.name" label="Name" :error="errors?.name" />
+        <InputField
+          v-model="contact.title"
+          label="Title"
+          :error="errors?.title"
+        />
         <InputField v-model="contact.profilePicture" label="Profile Picture" />
-        <InputField v-model="contact.address" label="Address" />
-        <InputField v-model="contact.phone" label="Phone" />
-        <InputField v-model="contact.email" label="Email" />
+        <!--<InputField v-model="contact.address" label="Address" />-->
+        <p class="block text-lg font-semibold leading-6 text-gray-900">
+          Address
+        </p>
+        <input
+          v-model="contact.address"
+          label="Address"
+          name="address"
+          type="text"
+          autocomplete="address-line1"
+          class="block w-full text-slate-500 bg-fuchsia-100 rounded-md border-0 py-2 px-4 pr-4 sm:text-sm sm:leading-6 outline-none focus:outline-none"
+        />
+        <div
+          v-if="errors?.address && !contact.address"
+          class="mt-2 text-sm text-red-600 capitalize"
+        >
+          {{ errors.address }}
+        </div>
+        <InputField
+          v-model="contact.phone"
+          label="Phone"
+          :error="errors?.phone"
+        />
+        <InputField
+          v-model="contact.email"
+          label="Email"
+          :error="errors?.email"
+        />
         <div class="flex justify-center pt-4">
           <Button
             id="submit-button"
@@ -43,9 +72,38 @@
 </template>
 
 <script setup>
+import { useContactsStore } from '@/stores/contacts'
+import { useToast } from '@/stores/toast'
 import PageWrapper from '@/components/layout/wrappers/PageWrapper'
 import InputField from '@/components/common/inputs/InputField'
 import Button from '@/components/common/buttons/Button'
+
+import { useForm, useField } from 'vee-validate'
+import contactSchema from '@/schemas/contactSchema'
+const { errors } = useForm({ validationSchema: contactSchema })
+
+const mapboxAccessToken =
+  'pk.eyJ1IjoibWF1cml4YXZpIiwiYSI6ImNscXRxODhjeDVhNzgyam11bG84eHpxYXYifQ.BAKIprNnxa8Gi4osdE_ePg'
+
+// Mapbox Search JS
+const script = document.createElement('script')
+script.id = 'search-js'
+script.defer = true
+script.src = 'https://api.mapbox.com/search-js/v1.0.0-beta.18/web.js'
+document.head.appendChild(script)
+
+// Callback para ejecutar después de cargar el script de Mapbox
+script.onload = function () {
+  mapboxsearch.autofill({
+    accessToken: mapboxAccessToken,
+  })
+
+  document
+    .querySelector('[name="address"]')
+    .addEventListener('mapboxsearch.results', (event) => {
+      console.log('Sugerencias de dirección:', event.detail.features)
+    })
+}
 
 useHead(() => ({
   title: `My App | Edit Contact`,
@@ -57,7 +115,8 @@ useHead(() => ({
 </script>
 
 <script>
-import axios from 'axios'
+const { show: showToast } = useToast()
+
 export default {
   name: 'ContactEdit',
   data() {
@@ -69,31 +128,32 @@ export default {
   mounted() {
     this.contactId = this.$route.params.id
     console.log(this.$route.params.id)
-    //alert(this.contactId)
     this.getContact(this.contactId)
   },
   methods: {
-    getContact(contactId) {
-      //alert('hola')
-      axios
-        .get(`http://localhost:8000/api/contacts/${contactId}/edit`)
-        .then((res) => {
-          console.log(res)
-          this.contact = res.data.contact
-        })
+    async getContact(contactId) {
+      try {
+        const contact = await useContactsStore().getContact(contactId)
+        this.contact = contact
+      } catch (error) {
+        console.error('Error fetching contact:', error)
+      }
     },
 
-    updateContact() {
-      //alert('Contact ID: ' + contactId.value)
-      axios
-        .put(
-          `http://localhost:8000/api/contacts/${this.$route.params.id}/edit`,
-          this.contact
+    async updateContact() {
+      try {
+        const updatedContact = this.contact
+        const contactId = this.$route.params.id
+        await useContactsStore().updateContact(contactId, updatedContact)
+        showToast('Success!', 'Contact updated successfully.', 'success')
+      } catch (error) {
+        console.error('Error updating contact:', error)
+        showToast(
+          'Error!',
+          'Error updating contact. Please try again.',
+          'danger'
         )
-        .then((res) => {
-          console.log(res, 'res')
-          alert(res.data.message)
-        })
+      }
     },
   },
 }

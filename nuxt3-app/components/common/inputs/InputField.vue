@@ -28,14 +28,14 @@
         @input="$emit('update:modelValue', $event.target.value)"
       />
       <div
-        v-if="error !== ''"
+        v-if="error !== '' && !modelValue"
         class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3"
       >
         <ExclamationIcon />
       </div>
     </div>
     <p
-      v-if="error !== ''"
+      v-if="error !== '' && !modelValue"
       id="email-error"
       class="mt-2 text-sm text-red-600 capitalize"
     >
