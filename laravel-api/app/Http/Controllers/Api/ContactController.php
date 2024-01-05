@@ -41,7 +41,7 @@ class ContactController extends Controller
             'profilePicture' => '',
             'address' => 'required|string',
             'phone' => 'required|string',
-            'email' => 'required|string',
+            'email' => 'required|email',
         ]);
 
         if ($validator->fails()) {
@@ -123,7 +123,7 @@ class ContactController extends Controller
             'profilePicture' => '',
             'address' => 'required|string',
             'phone' => 'required|string',
-            'email' => 'required|string',
+            'email' => 'required|email',
         ]);
 
         if ($validator->fails()) {
