@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
-
-import useRequest from '@/composables/useRequest'
+import axios from 'axios'
 
 export const useAuth = defineStore('auth', () => {
   /* -------------------------- STATE -------------------------- */
@@ -9,48 +8,42 @@ export const useAuth = defineStore('auth', () => {
 
   /* -------------------------- MUTATORS -------------------------- */
 
-  const setUser = async (newUser) => {
+  const setUser = (newUser) => {
     user.value = newUser
   }
 
   /* -------------------------- ACTIONS -------------------------- */
 
-  const getUser = async () => {
-    const { get } = useRequest()
+  const login = async (credentials) => {
+    try {
+      const response = await axios.post(
+        'http://localhost:8000/api/login',
+        credentials
+      )
 
-    const response = await get('/auth/user')
+      if (!response.data.status) {
+        throw new Error(response.data.message)
+      }
 
-    if (!response.data.success) {
-      throw new Error(response.data)
-    }
+      const authToken = response.data.access_token
 
-    setUser(response.data.data.user)
-  }
-
-  const login = async (payload) => {
-    const { post } = useRequest()
-    const token = useCookie('token')
-    const context = useNuxtApp()
-
-    const response = await post('/auth/login', payload)
-
-    if (!response.data.success) {
-      throw new Error(response.data)
-    }
-
-    token.value = response.data.data.token
-
-    context.$axios.defaults.headers = {
-      common: {
+      // Configura el token en las cabeceras de axios
+      axios.defaults.headers.common = {
+        ...axios.defaults.headers.common,
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token.value}`,
-      },
+        Authorization: `Bearer ${authToken}`,
+      }
+    } catch (error) {
+      console.error('Error during login:', error)
+      throw new Error('Error during login')
     }
-
-    await getUser()
   }
 
   /* -------------------------- RETURN -------------------------- */
 
-  return { user, setUser, login }
+  return {
+    user,
+    setUser,
+    login,
+  }
 })

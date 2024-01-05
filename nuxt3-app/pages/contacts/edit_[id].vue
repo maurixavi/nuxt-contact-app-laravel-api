@@ -78,9 +78,11 @@ import PageWrapper from '@/components/layout/wrappers/PageWrapper'
 import InputField from '@/components/common/inputs/InputField'
 import Button from '@/components/common/buttons/Button'
 
-import { useForm, useField } from 'vee-validate'
+import { useForm } from 'vee-validate'
 import contactSchema from '@/schemas/contactSchema'
 const { errors } = useForm({ validationSchema: contactSchema })
+
+console.log(errors.email)
 
 const mapboxAccessToken =
   'pk.eyJ1IjoibWF1cml4YXZpIiwiYSI6ImNscXRxODhjeDVhNzgyam11bG84eHpxYXYifQ.BAKIprNnxa8Gi4osdE_ePg'
@@ -127,7 +129,6 @@ export default {
   },
   mounted() {
     this.contactId = this.$route.params.id
-    console.log(this.$route.params.id)
     this.getContact(this.contactId)
   },
   methods: {
