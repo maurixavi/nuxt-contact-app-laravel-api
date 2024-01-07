@@ -3,7 +3,27 @@
     <div class="w-full flex justify-center mt-10 mb-10">
       <form class="w-1/2 space-y-4" @submit.prevent="updateContact">
         <button class="text-gray-400 text-base focus:outline-none">
-          <nuxt-link :to="`/contacts/${contact.id}`">← Cancel</nuxt-link>
+          <nuxt-link
+            :to="`/contacts/${contact.id}`"
+            class="flex items-center space-x-1"
+            ><svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              width="5"
+              height="5"
+              class="w-4 h-4 mr-1"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            Cancel</nuxt-link
+          >
         </button>
         <div class="flex items-center space-x-1">
           <img
@@ -28,18 +48,7 @@
           :error="errors?.title"
         />
         <InputField v-model="contact.profilePicture" label="Profile Picture" />
-        <!--<InputField v-model="contact.address" label="Address" />-->
-        <p class="block text-lg font-semibold leading-6 text-gray-900">
-          Address
-        </p>
-        <input
-          v-model="contact.address"
-          label="Address"
-          name="address"
-          type="text"
-          autocomplete="address-line1"
-          class="block w-full text-slate-500 bg-fuchsia-100 rounded-md border-0 py-2 px-4 pr-4 sm:text-sm sm:leading-6 outline-none focus:outline-none"
-        />
+        <MapboxSearch v-model="contact.address" />
         <div
           v-if="errors?.address && !contact.address"
           class="mt-2 text-sm text-red-600 capitalize"
@@ -77,35 +86,11 @@ import { useToast } from '@/stores/toast'
 import PageWrapper from '@/components/layout/wrappers/PageWrapper'
 import InputField from '@/components/common/inputs/InputField'
 import Button from '@/components/common/buttons/Button'
-
-import { useForm } from 'vee-validate'
+import MapboxSearch from '@/components/common/inputs/MapboxSearch'
 import contactSchema from '@/schemas/contactSchema'
+import { useForm } from 'vee-validate'
+
 const { errors } = useForm({ validationSchema: contactSchema })
-
-console.log(errors.email)
-
-const mapboxAccessToken =
-  'pk.eyJ1IjoibWF1cml4YXZpIiwiYSI6ImNscXRxODhjeDVhNzgyam11bG84eHpxYXYifQ.BAKIprNnxa8Gi4osdE_ePg'
-
-// Mapbox Search JS
-const script = document.createElement('script')
-script.id = 'search-js'
-script.defer = true
-script.src = 'https://api.mapbox.com/search-js/v1.0.0-beta.18/web.js'
-document.head.appendChild(script)
-
-// Callback para ejecutar después de cargar el script de Mapbox
-script.onload = function () {
-  mapboxsearch.autofill({
-    accessToken: mapboxAccessToken,
-  })
-
-  document
-    .querySelector('[name="address"]')
-    .addEventListener('mapboxsearch.results', (event) => {
-      console.log('Sugerencias de dirección:', event.detail.features)
-    })
-}
 
 useHead(() => ({
   title: `My App | Edit Contact`,

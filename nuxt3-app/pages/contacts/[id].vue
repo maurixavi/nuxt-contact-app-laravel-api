@@ -3,7 +3,25 @@
     <div class="w-full flex justify-center mt-10 mb-10">
       <form class="w-1/2 space-y-4" @submit.prevent="saveContact">
         <button class="text-gray-400 text-base focus:outline-none">
-          <nuxt-link to="/contacts">← Back</nuxt-link>
+          <nuxt-link to="/contacts" class="flex items-center space-x-1">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              width="5"
+              height="5"
+              class="w-4 h-4 mr-1"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            Back
+          </nuxt-link>
         </button>
         <div class="flex items-center space-x-1">
           <img
@@ -21,7 +39,7 @@
             </p>
           </div>
         </div>
-        <label class="block text-lg font-medium leading-6 text-gray-900 mt-8"
+        <label class="block text-lg font-semibold leading-6 text-gray-900 mt-8"
           >Address</label
         >
         <p class="text-gray-400 leading-none">{{ currentContact.address }}</p>
@@ -50,7 +68,6 @@
 
 <script setup>
 import PageWrapper from '@/components/layout/wrappers/PageWrapper'
-import InputField from '@/components/common/inputs/InputField'
 import Button from '@/components/common/buttons/Button'
 import { useContactsStore } from '@/stores/contacts'
 import { onMounted, ref } from 'vue'

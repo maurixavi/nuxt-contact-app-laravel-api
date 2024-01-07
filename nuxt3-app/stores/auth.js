@@ -27,7 +27,7 @@ export const useAuth = defineStore('auth', () => {
 
       const authToken = response.data.access_token
 
-      // Configura el token en las cabeceras de axios
+      // Set up the token in the headers of axios.
       axios.defaults.headers.common = {
         ...axios.defaults.headers.common,
         'Content-Type': 'application/json',

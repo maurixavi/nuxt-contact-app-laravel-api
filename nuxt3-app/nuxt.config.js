@@ -35,14 +35,7 @@ export default defineNuxtConfig({
       apiBaseUrl: process.env.API_BASE_URL,
     },
   },
-  /*router: {
-    extendRoutes(routes) {
-      routes.push(
-        {
-          path: '/contacts', // Ruta temporal para el listado de contactos
-          component: 'pages/contacts.vue',
-        }
-      )
-    },
-  },*/
+  router: {
+    middleware: 'authenticated',
+  },
 })

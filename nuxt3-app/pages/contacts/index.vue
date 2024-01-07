@@ -81,6 +81,9 @@ import { useContactsStore } from '@/stores/contacts'
 import PageWrapper from '@/components/layout/wrappers/PageWrapper'
 import Button from '@/components/common/buttons/Button'
 import axios from 'axios'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 useHead({
   title: 'My App | Contacts',
@@ -91,10 +94,15 @@ useHead({
 })
 
 const contactsStore = useContactsStore()
+
 const authToken = localStorage.getItem('authToken')
 
+// Check if the token is present and valid before assigning it to the headers of axios.
 if (authToken) {
   axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`
+} else {
+  // If there is no token, redirect the user to the login page
+  router.push('/auth/login')
 }
 
 const searchQuery = ref('')
@@ -107,20 +115,12 @@ const sortedContacts = computed(() => {
   })
 })
 
-/*const filteredContacts = computed(() => {
-  const query = searchQuery.value.toLowerCase()
-  return sortedContacts.value.filter((contact) => {
-    return contact.name.toLowerCase().startsWith(query)
-  })
-})*/
-
 const filteredContacts = computed(() => {
   const query = searchQuery.value.toLowerCase()
-  const queryWords = query.split(' ').filter(Boolean) // Dividir la consulta en palabras y eliminar cadenas vacías
+  const queryWords = query.split(' ').filter(Boolean)
 
   return sortedContacts.value.filter((contact) => {
     return queryWords.every((word) => {
-      // Verificar si cada palabra de la consulta coincide con alguna palabra en el nombre o título
       return contact.name
         .toLowerCase()
         .split(' ')
